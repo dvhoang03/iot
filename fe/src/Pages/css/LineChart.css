@@ -1,0 +1,19 @@
+.linechart {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.tchart {
+    padding: 10px;
+    width: auto;
+}
+
+.hchart {
+    padding: 10px;
+    width: auto;
+}
+
+.lchart {
+    padding: 10px;
+    width: auto;
+}

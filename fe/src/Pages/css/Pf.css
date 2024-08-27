@@ -1,0 +1,35 @@
+.image {
+    margin-right: 20px;
+}
+
+.image img {
+    width: 500px;
+    height: auto;
+    /* border-radius: "50%"; */
+    margin-bottom: "20px"
+}
+
+a {
+    text-decoration: "none";
+    color: rgb(123, 0, 255);
+    font-size: "16px"
+}
+
+.pf {
+    padding-top: 20px;
+    display: flex;
+    padding-left: 200px;
+    margin-right: auto;
+    background: linear-gradient(180deg, #fde1ff, #e1ffea22 70%);
+}
+
+.info {
+    width: 600px;
+    margin-right: 200px;
+    background: linear-gradient(180deg, #f99a9a, #e1ffea22 70%);
+}
+
+.info a {
+    text-decoration: none;
+    color: rgb(238, 4, 4);
+}

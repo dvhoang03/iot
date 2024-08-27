@@ -1,0 +1,74 @@
+.datasensor {
+    background: linear-gradient(180deg, #fde1ff, #e1ffea22 70%);
+    padding-bottom: 490px;
+    /* display: flex; */
+    padding-top: 20px;
+}
+
+.search {
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.datasensor input {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-right: 10px;
+
+}
+
+.datasensor select {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    margin-right: 10px;
+}
+
+.search button {
+    color: white;
+    background-color: #ff4141;
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+}
+
+.datasensor table {
+    width: auto;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+
+}
+
+.datasensor th {
+    border: 1px solid #0a0303;
+}
+
+.datasensor table,
+th,
+td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.page {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.page button {
+    color: white;
+    background-color: #ff4141;
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+}
+
+.pagesize select {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    margin-right: 10px;
+    margin-left: 5px;
+}
