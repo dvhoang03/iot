@@ -1,5 +1,5 @@
 import React from 'react'
-import image from "../Components/Assets/image.png"
+import image from '../Components/Assets/image.png'
 import baocao from "../Components/Assets/baocao.pdf"
 import "./css/Pf.css"
 

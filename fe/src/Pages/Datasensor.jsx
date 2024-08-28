@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 import './css/Datasensor.css'
 
 function Datasensor() {
+    const dt = [
+        // Dữ liệu mẫu, có thể thay thế bằng dữ liệu thực tế
+        { id: 1, temperature: 25, light: 100, humidity: 50, time: '2024-08-26 10:00' },
+        { id: 2, temperature: 28, light: 120, humidity: 55, time: '2024-08-26 11:00' },
+        { id: 3, temperature: 26, light: 110, humidity: 60, time: '2024-08-26 12:00' },
+        { id: 4, temperature: 30, light: 130, humidity: 65, time: '2024-08-26 13:00' },
+        { id: 5, temperature: 27, light: 125, humidity: 58, time: '2024-08-26 14:00' },
+        // Thêm nhiều dữ liệu để kiểm tra phân trang
+    ]
     const [data, setData] = useState([
         // Dữ liệu mẫu, có thể thay thế bằng dữ liệu thực tế
         { id: 1, temperature: 25, light: 100, humidity: 50, time: '2024-08-26 10:00' },
@@ -20,28 +29,37 @@ function Datasensor() {
     const [pageSize, setPageSize] = useState(2); // Số dòng hiển thị mỗi trang
 
     const handleSearch = () => {
+        // data = dt;
+        setData(dt);
+
+        // console.log(" sau loc:", data, "dt:", dt)
         // Lọc dữ liệu theo giá trị input và loại trường được chọn
-        const filteredData = data.filter(item =>
-            item[filterType].toString().includes(filterValue)
+        const filteredData = dt.filter(item =>
+            item[filterType].toString().includes(filterValue)//lọc theo filtertype và xem nó có khớp với giá trị  filtertype không
         );
         setData(filteredData);
         setCurrentPage(1); // Reset trang về 1 sau khi tìm kiếm
+        // console.log(" sau loc:", filteredData)
     };
 
     const handleFilterByTime = () => {
         // Lọc dữ liệu theo khoảng thời gian
-        const filteredData = data.filter(item => {
+
+
+        const filteredData = dt.filter(item => {
             const itemTime = new Date(item.time);
             return itemTime >= new Date(startTime) && itemTime <= new Date(endTime);
         });
         setData(filteredData);
         setCurrentPage(1); // Reset trang về 1 sau khi lọc
+
     };
 
     // Tính toán dữ liệu để hiển thị trên trang hiện tại
     const indexOfLastItem = currentPage * pageSize;
     const indexOfFirstItem = indexOfLastItem - pageSize;
     const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
+    console.log("slice: ", currentData)
 
     const totalPages = Math.ceil(data.length / pageSize);
 
