@@ -69,6 +69,7 @@ function Datasensor() {
             <div className='search'>
                 <input
                     type="text"
+                    
                     placeholder="Nhập giá trị tìm kiếm"
                     value={filterValue}
 

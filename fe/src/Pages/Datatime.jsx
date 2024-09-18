@@ -3,7 +3,7 @@ import './css/Datatime.css'
 
 function Datatime() {
     // Tạo các state để lưu trữ dữ liệu của nhiệt độ, độ ẩm, ánh sáng
-    const [temperature, setTemperature] = useState(15); // Dữ liệu giả lập ban đầu cho nhiệt độ
+    const [temperature, setTemperature] = useState(30); // Dữ liệu giả lập ban đầu cho nhiệt độ
     const [humidity, setHumidity] = useState(50); // Dữ liệu giả lập ban đầu cho độ ẩm
     const [light, setLight] = useState(300); // Dữ liệu giả lập ban đầu cho ánh sáng
 

@@ -13,7 +13,7 @@ function Navbar() {
                 <img src={iott} alt="" />
             </div>
             <ul className="nav-menu">
-                <li onClick={() => { setMenu("dashboarch") }}><Link style={{ textDecoration: 'none', color: 'black' }} to='/'>Dashboarch</Link>{menu === "dashboarch" ? <hr /> : <></>}</li>
+                <li onClick={() => { setMenu("dashboarch") }}><Link style={{ textDecoration: 'none', color: 'black' }} to='/'>Dashboard</Link>{menu === "dashboarch" ? <hr /> : <></>}</li>
                 <li onClick={() => { setMenu("datasensor") }}><Link style={{ textDecoration: 'none', color: 'black' }} to='/datasensor'>Datasensor</Link>{menu === "datasensor" ? <hr /> : <></>}</li>
                 <li onClick={() => { setMenu("actionhistory") }}><Link style={{ textDecoration: 'none', color: 'black' }} to='/actionhistory'>Action history</Link>{menu === "actionhistory" ? <hr /> : <></>}</li>
             </ul>
