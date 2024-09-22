@@ -6,38 +6,76 @@ import Switch from '@mui/material/Switch';
 import './css/Control.css';
 
 function Control() {
-    const [isFanOn, setFanOn] = useState(false);
-    const [isLightOn, setLightOn] = useState(false);
-    const [isAcOn, setAcOn] = useState(false);
+    const [isFanOn, setFanOn] = useState("off");
+    const [isLightOn, setLightOn] = useState("off");
+    const [isAcOn, setAcOn] = useState("off");
+
+    const sendRequest = async (device, action) => {
+        try {
+            console.log("data gui len be", device, action);
+            const response = await fetch('http://localhost:4000/dashboard/controll', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ device, action }),
+            });
+            console.log("data tu backend", response);
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('Response from backend:', data);
+
+            if (data.device === 'fan') {
+                setFanOn(data.action);
+            } else if (data.device === 'led') {
+                setLightOn(data.action);
+            } else if (data.device === 'ac') {
+                setAcOn(data.action);
+            }
+
+        } catch (error) {
+            console.error('Error sending request:', error);
+            alert("loi xay ra");
+        }
+    };
 
     const toggleFan = () => {
-        setFanOn(!isFanOn);
+        const newFanState = isFanOn === 'on' ? 'off' : 'on';
+        // setFanOn(newFanState);
+        sendRequest('fan', newFanState);
     };
 
     const toggleLight = () => {
-        setLightOn(!isLightOn);
+        const newLightState = isLightOn === 'on' ? 'off' : 'on';
+        // setLightOn(newLightState);
+        sendRequest('led', newLightState);
     };
 
     const toggleAc = () => {
-        setAcOn(!isAcOn);
+        const newAcState = isAcOn === 'on' ? 'off' : 'on';
+        // setAcOn(newAcState);
+        sendRequest('ac', newAcState);
     };
 
     return (
         <div className='control'>
-
             <div className='fan' style={{ display: 'flex', alignItems: 'center' }}>
                 <p>Fan</p>
                 <FaFan
                     style={{
                         fontSize: '24px',
                         marginRight: '10px',
-                        color: isFanOn ? 'blue' : 'gray', // Đổi màu khi bật/tắt quạt
+                        color: isFanOn === 'on' ? 'blue' : 'gray',
                         transition: 'color 0.3s, transform 0.3s',
-                        transform: isFanOn ? 'rotate(360deg)' : 'rotate(0deg)', // Quay khi bật
+                        transform: isFanOn === 'on' ? 'rotate(360deg)' : 'rotate(0deg)',
                         transformOrigin: 'center'
                     }}
                 />
-                <Switch checked={isFanOn} onChange={toggleFan} />
+                <Switch checked={isFanOn === 'on'} onChange={toggleFan} />
             </div>
 
             <div className='led' style={{ display: 'flex', alignItems: 'center' }}>
@@ -46,11 +84,11 @@ function Control() {
                     style={{
                         fontSize: '24px',
                         marginRight: '10px',
-                        color: isLightOn ? 'gold' : 'gray', // Đổi màu khi bật/tắt đèn
+                        color: isLightOn === 'on' ? 'gold' : 'gray',
                         transition: 'color 0.3s'
                     }}
                 />
-                <Switch checked={isLightOn} onChange={toggleLight} />
+                <Switch checked={isLightOn === 'on'} onChange={toggleLight} />
             </div>
 
             <div className='ac' style={{ display: 'flex', alignItems: 'center' }}>
@@ -59,16 +97,14 @@ function Control() {
                     style={{
                         fontSize: '24px',
                         marginRight: '10px',
-                        color: isAcOn ? 'lightblue' : 'gray', // Đổi màu khi bật/tắt điều hòa
+                        color: isAcOn == 'on' ? 'lightblue' : 'gray',
                         transition: 'color 0.3s'
                     }}
                 />
-                <Switch checked={isAcOn} onChange={toggleAc} />
+                <Switch checked={isAcOn === 'on'} onChange={toggleAc} />
             </div>
-
         </div>
     );
 }
 
 export default Control;
-

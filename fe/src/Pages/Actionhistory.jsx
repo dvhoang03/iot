@@ -1,39 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './css/Actionhistory.css'
 
 function Actionhistory() {
-    const [data, setData] = useState([
-        // Dữ liệu mẫu, có thể thay thế bằng dữ liệu thực tế
-        { id: 1, device: 'Device A', onTime: '2024-08-26 08:00', offTime: '2024-08-26 10:00' },
-        { id: 2, device: 'Device B', onTime: '2024-08-26 09:00', offTime: '2024-08-26 11:00' },
-        { id: 3, device: 'Device C', onTime: '2024-08-26 12:00', offTime: '2024-08-26 14:00' },
-        // Thêm nhiều dữ liệu để kiểm tra
-    ]);
+    const [data, setData] = useState([]);
 
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(2); // Số dòng hiển thị mỗi trang
+    const [pageSize, setPageSize] = useState(10); // Số dòng hiển thị mỗi trang
+    const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+    useEffect(() => {
+        getData();
+    }, [currentPage, pageSize]);
+
+    const getData = () => {
+        fetch(`http://localhost:4000/actionhistory?page=${currentPage}`)
+            .then((response) => response.json())
+            .then((result) => {
+                console.log(result.data)
+                setData(result.data);
+                setTotalPages(result.pagination.totalPages);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
+    const getFilter = () => {
+        
+        fetch(`http://localhost:4000/actionhistory/filter?starttime=${startTime}&endtime=${endTime}&page=${currentPage}`)
+            .then((response) => response.json())
+            .then((result) => {
+                console.log(result.data)
+                setData(result.data);
+                setTotalPages(result.pagination.totalPages);
+            }).catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
+
+
+
+    const getNextPage = async (index) => {
+
+        if (index < pageSize) {
+            setCurrentPage(index + 1);
+            if (startTime === null && endTime === null) {
+
+                getData();
+            }
+            else {
+                getFilter();
+            }
+        }
+    }
+
+    const getPreviousPage = (index) => {
+        if (index > 1) {
+            setCurrentPage(index - 1);
+            if (startTime === null && endTime === null) {
+
+                getData();
+            }
+            else {
+                getFilter();
+            }
+        }
+    }
 
     const handleFilterByTime = () => {
         // Lọc dữ liệu theo khoảng thời gian
-        const filteredData = data.filter(item => {
-            const onTime = new Date(item.onTime);
-            const offTime = new Date(item.offTime);
-            const start = new Date(startTime);
-            const end = new Date(endTime);
-            return (onTime >= start && onTime <= end) || (offTime >= start && offTime <= end);
-        });
-        setData(filteredData);
-        setCurrentPage(1); // Reset về trang 1 sau khi lọc
+        setCurrentPage(1)
+        getFilter();
+
     };
 
-    // Tính toán dữ liệu để hiển thị trên trang hiện tại
-    const indexOfLastItem = currentPage * pageSize;
-    const indexOfFirstItem = indexOfLastItem - pageSize;
-    const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
 
-    const totalPages = Math.ceil(data.length / pageSize);
+
+
 
     return (
         <div className='actionhistory'>
@@ -66,12 +111,12 @@ function Actionhistory() {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentData.map(item => (
+                        {data.map(item => (
                             <tr key={item.id}>
                                 <td>{item.id}</td>
                                 <td>{item.device}</td>
-                                <td>{item.onTime}</td>
-                                <td>{item.offTime}</td>
+                                <td>{item.action}</td>
+                                <td>{new Date(item.timestamp).toLocaleString()}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -80,8 +125,7 @@ function Actionhistory() {
 
             <div className='pagination'>
                 <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
+                    onClick={() => getPreviousPage(currentPage)}
                 >
                     Trang trước
                 </button>
@@ -89,24 +133,13 @@ function Actionhistory() {
                 <span> Trang {currentPage} / {totalPages}</span>
 
                 <button
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
+                    onClick={() => getNextPage(currentPage)}
                 >
                     Trang sau
                 </button>
             </div>
 
-            <div className='page-size'>
-                <label>Kích thước trang:</label>
-                <select
-                    value={pageSize}
-                    onChange={(e) => setPageSize(Number(e.target.value))}
-                >
-                    <option value={2}>2</option>
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                </select>
-            </div>
+
         </div>
     );
 }

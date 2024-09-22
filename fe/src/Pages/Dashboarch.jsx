@@ -1,76 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import Chart from 'chart.js/auto';
 import './css/Dashboarch.css';
 import Linechart from './Linechart.jsx';
 import Control from './Control.jsx';
 import Datatime from './Datatime.jsx';
+import io from 'socket.io-client';
 
+const socket = io('http://localhost:8080'); // Địa chỉ của server backend
 
 function Dashboarch() {
-    // const [data, setData] = useState({
-    //     temperature: [],
-    //     light: [],
-    //     humidity: []
-    // });
+    const [sensorData, setSensorData] = useState(null);
 
-    // const [lightSwitch, setLightSwitch] = useState(false);
-    // const [fanSwitch, setFanSwitch] = useState(false);
-    // const [acSwitch, setAcSwitch] = useState(false);
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket server');
+        });
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         const newTemperature = Math.random() * 10 + 20;
-    //         const newLight = Math.random() * 100;
-    //         const newHumidity = Math.random() * 20 + 60;
+        socket.on('connect_error', (error) => {
+            console.error('WebSocket connection error:', error);
+        });
 
-    //         setData(prevData => ({
-    //             temperature: [...prevData.temperature, newTemperature].slice(-10),
-    //             light: [...prevData.light, newLight].slice(-10),
-    //             humidity: [...prevData.humidity, newHumidity].slice(-10)
-    //         }));
-    //     }, 1000);
+        socket.on('disconnect', () => {
+            console.log('Disconnected from WebSocket server');
+        });
 
-    //     return () => clearInterval(interval);
-    // }, []);
+        // Lắng nghe sự kiện 'newSensorData' từ server
+        socket.on('newSensorData', (data) => {
+            console.log('Received new sensor data:', data, "typeof: ", typeof (sensorData));
+            setSensorData(data);
+        });
 
-    // useEffect(() => {
-    //     const ctx = document.getElementById('combinedChart').getContext('2d');
+        return () => {
+            socket.off('newSensorData');
+        };
+    }, []);
 
-    //     new Chart(ctx, {
-    //         type: 'line',
-    //         data: {
-    //             labels: data.temperature.map((_, i) => `T-${i}`),
-    //             datasets: [
-    //                 {
-    //                     label: 'Temperature (°C)',
-    //                     data: data.temperature,
-    //                     borderColor: 'red',
-    //                     fill: false
-    //                 },
-    //                 {
-    //                     label: 'Light (Lux)',
-    //                     data: data.light,
-    //                     borderColor: 'yellow',
-    //                     fill: false
-    //                 },
-    //                 {
-    //                     label: 'Humidity (%)',
-    //                     data: data.humidity,
-    //                     borderColor: 'blue',
-    //                     fill: false
-    //                 }
-    //             ]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             scales: {
-    //                 y: {
-    //                     beginAtZero: true
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }, [data]);
+    console.log("data nhan duoc ơ dashboard sensordata", sensorData);
 
     return (
         <div className='dashboard-main'>
@@ -78,13 +42,21 @@ function Dashboarch() {
                 <Control />
             </div>
             <div className="">
-                <Datatime />
+                <Datatime
+                    light={sensorData && sensorData.length > 0 ? sensorData[0].light : 0} // Truy cập thuộc tính light trong đối tượng đầu tiên của mảng
+                    humidity={sensorData && sensorData.length > 0 ? sensorData[0].humidity : 0} // Truy cập thuộc tính humidity
+                    temperature={sensorData && sensorData.length > 0 ? sensorData[0].temperature : 0}
+
+                />
             </div>
             <div className="chart">
-                <Linechart />
+                <Linechart
+                    light={sensorData && sensorData.length > 0 ? sensorData[0].light : 0} // Truy cập thuộc tính light trong đối tượng đầu tiên của mảng
+                    humidity={sensorData && sensorData.length > 0 ? sensorData[0].humidity : 0} // Truy cập thuộc tính humidity
+                    temperature={sensorData && sensorData.length > 0 ? sensorData[0].temperature : 0} // Truy cập thuộc tính temperature
+                    timestamp={sensorData && sensorData.length > 0 ? sensorData[0].timestamp : 0} />
             </div>
-
-        </div >
+        </div>
     );
 }
 

@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import './css/Datatime.css'
 
-function Datatime() {
-    // Tạo các state để lưu trữ dữ liệu của nhiệt độ, độ ẩm, ánh sáng
-    const [temperature, setTemperature] = useState(30); // Dữ liệu giả lập ban đầu cho nhiệt độ
-    const [humidity, setHumidity] = useState(50); // Dữ liệu giả lập ban đầu cho độ ẩm
-    const [light, setLight] = useState(300); // Dữ liệu giả lập ban đầu cho ánh sáng
+function Datatime(props) {
+    const [temp, setTemperature] = useState(100); // Dữ liệu ban đầu cho nhiệt độ
+    const [hum, setHumidity] = useState(100); // Dữ liệu ban đầu cho độ ẩm
+    const [lig, setLight] = useState(10); // Dữ liệu ban đầu cho ánh sáng
+    console.log("data props ở ơ datatime: ",props);
+    const { light, humidity, temperature } = props;
 
-    // Hàm giả lập việc nhận dữ liệu mới từ cảm biến mỗi giây
+    // Cập nhật các giá trị khi nhận được data mới từ props, chỉ khi data không phải null hoặc undefined
+    useEffect(() => {
+        if (light != null) {
+            setLight(light);
+        }
+        if (humidity != null) {
+            setHumidity(humidity);
+        }
+        if (temperature != null) {
+            setTemperature(temperature);
+        }
+    }, [light, humidity, temperature]);  // Theo dõi sự thay đổi của các props
 
-
-    // Hàm tính toán màu sắc dựa trên giá trị
     const calculateColor = (value, min, max, colorStart, colorEnd) => {
         const ratio = (value - min) / (max - min);
-        const colorIntensity = Math.round(ratio * 255);
         return `rgb(${colorStart[0] + ratio * (colorEnd[0] - colorStart[0])}, 
                 ${colorStart[1] + ratio * (colorEnd[1] - colorStart[1])}, 
                 ${colorStart[2] + ratio * (colorEnd[2] - colorStart[2])})`;
@@ -23,28 +32,28 @@ function Datatime() {
         <div className='datatime' >
             <div className='temperature' >
                 <h3>Temperature</h3>
-                <p>{temperature}°C</p>
+                <p>{temp}°C</p>
                 <hr style={{
-                    borderColor: calculateColor(temperature, -10, 40, [0, 0, 255], [255, 0, 0]), // Màu sắc từ xanh dương (rất lạnh) sang đỏ (rất nóng)
-                    borderWidth: '12px', // Tăng độ dày của thẻ hr
+                    borderColor: calculateColor(temp, -10, 40, [0, 0, 255], [255, 0, 0]), // Màu sắc từ xanh dương (rất lạnh) sang đỏ (rất nóng)
+                    borderWidth: '12px',
                     transition: 'border-color 0.5s ease'
                 }} />
             </div>
             <div className='humiditi' >
                 <h3>Humidity</h3>
-                <p>{humidity}%</p>
+                <p>{hum}%</p>
                 <hr style={{
-                    borderColor: calculateColor(humidity, 0, 100, [0, 255, 0], [0, 0, 255]), // Màu sắc từ xanh lá (rất khô) sang xanh dương (rất ẩm)
-                    borderWidth: '12px', // Tăng độ dày của thẻ hr
+                    borderColor: calculateColor(hum, 0, 100, [0, 255, 0], [0, 0, 255]), // Màu sắc từ xanh lá (rất khô) sang xanh dương (rất ẩm)
+                    borderWidth: '12px',
                     transition: 'border-color 0.5s ease'
                 }} />
             </div>
             <div className='light' >
                 <h3>Light Level</h3>
-                <p>{light} lx</p>
+                <p>{lig} lx</p>
                 <hr style={{
-                    borderColor: calculateColor(light, 0, 1000, [255, 255, 0], [255, 69, 0]), // Màu sắc từ vàng nhạt sang cam đậm
-                    borderWidth: '12px', // Tăng độ dày của thẻ hr
+                    borderColor: calculateColor(lig, 0, 1000, [255, 255, 0], [255, 69, 0]), // Màu sắc từ vàng nhạt sang cam đậm
+                    borderWidth: '12px',
                     transition: 'border-color 0.5s ease'
                 }} />
             </div>
