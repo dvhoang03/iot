@@ -9,6 +9,7 @@
 #define AC_PIN D4
 #define DHT_SENSOR_PIN  D7 // The ESP8266 pin D7 connected to DHT11 sensor
 #define DHT_SENSOR_TYPE DHT11
+#define LIGHT_SENSOR_PIN A0
 
 #define SUBSCRIBE_TOPIC "esp8266-001/receive"
 
@@ -111,7 +112,7 @@ void connectToMQTT() {
 void sendToMQTT() {
   StaticJsonDocument<200> message;
 
-  message["light"] = 100;  // Or you can read data from other sensors
+  message["light"] =  analogRead(LIGHT_SENSOR_PIN);;  // Or you can read data from other sensors
   message["humidity"]= dht_sensor.readHumidity();
   message["temperature"] =dht_sensor.readTemperature();
   char messageBuffer[512];

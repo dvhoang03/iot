@@ -44,7 +44,7 @@ function Actionhistory() {
 
     const getNextPage = async (index) => {
 
-        if (index < pageSize) {
+        if (index < totalPages) {
             setCurrentPage(index + 1);
             if (startTime === null && endTime === null) {
 

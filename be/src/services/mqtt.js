@@ -86,7 +86,7 @@ client.on('message', (topic, message) => {
                 });
             }
         });
-    } 
+    }
     // else {
     //     const query = 'INSERT INTO actionhistory (device, action) VALUES (?, ?)';
     //     const values = [data.device, data.action];
@@ -98,7 +98,7 @@ client.on('message', (topic, message) => {
     //             console.log('Inserted action data into database');
 
     //             // Gửi dữ liệu tới frontend sau khi lưu thành công
-                
+
     //         }
     //     });
     // }

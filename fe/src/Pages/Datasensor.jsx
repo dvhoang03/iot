@@ -36,8 +36,9 @@ function Datasensor() {
 
     const getNextPage = async (index) => {
 
-        if (index < pageSize) {
+        if (index < totalPages) {
             setCurrentPage(index + 1);
+            console.log("hello", currentPage, totalPages)
             if (filterType === "none" || filterValue === null) {
 
                 getData();
@@ -84,7 +85,7 @@ function Datasensor() {
     };
 
     const getFilter = () => {
-        
+
         fetch(`http://localhost:4000/datasensor/filter?starttime=${startTime}&endtime=${endTime}&page=${currentPage}`)
             .then((response) => response.json())
             .then((result) => {
@@ -111,8 +112,8 @@ function Datasensor() {
     };
 
     // Tính toán dữ liệu để hiển thị trên trang hiện tại
-    const indexOfLastItem = currentPage * pageSize;
-    const indexOfFirstItem = indexOfLastItem - pageSize;
+    // const indexOfLastItem = currentPage * pageSize;
+    // const indexOfFirstItem = indexOfLastItem - pageSize;
 
     return (
         <div className='datasensor'>
