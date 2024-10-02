@@ -7,7 +7,7 @@ let controll = (req, res) => {
 
     var topic = req.body.device;
     var message = req.body.action;
-    console.log("data tu frontend",req.body);
+    console.log("data tu frontend", req.body);
 
     // Publish MQTT message to request the device action
     client.publish(`${topic}/req`, message, (err) => {
@@ -25,13 +25,8 @@ let controll = (req, res) => {
             console.log(`Received message from ${responseTopic}: ${mqttMessage.toString()}`);
 
             let data;
-            try {
-                // Parse the message into JSON
-                data = JSON.parse(mqttMessage.toString());
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-                return res.status(500).json({ device: topic, action: (message === 'off' ? 'on' : 'off'), error: 'Invalid JSON from MQTT' });
-            }
+            data = JSON.parse(mqttMessage.toString());
+
             const query = 'INSERT INTO actionhistory (device, action) VALUES (?, ?)';
             const values = [topic, data.action];
 
@@ -39,7 +34,7 @@ let controll = (req, res) => {
             db.query(query, values, (err, dbRes) => {
                 if (err) {
                     console.error('Error executing query', err.stack);
-                    return res.status(500).json({ device: topic, action: (message === 'off' ? 'on' : 'off'), error: 'Failed to save action to database' });
+                    return res.status(500).json({ device: topic, action: message, error: 'Failed to save action to database' });
                 } else {
                     console.log('Inserted action data into database');
 
@@ -53,8 +48,6 @@ let controll = (req, res) => {
             });
         }
     });
-    // res.send("dlleo")
-    // res.json(req.body);
 };
 
 module.exports = { controll };

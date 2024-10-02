@@ -3,22 +3,24 @@ import './css/Datasensor.css'
 
 function Datasensor() {
     const [data, setData] = useState([]); // Dữ liệu từ backend
-    const [filterType, setFilterType] = useState('none');
-    const [filterValue, setFilterValue] = useState('');
+    const [filterType, setFilterType] = useState(null);
+    const [filterValue, setFilterValue] = useState(null);
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10); // Số dòng hiển thị mỗi trang
     const [totalPages, setTotalPages] = useState(0); // Tổng số trang
 
-    console.log("vlaue", filterValue);
-    console.log("type", filterType);
-    console.log("startTime", startTime);
-    console.log("endTime", endTime);
-    // Gọi API để lấy dữ liệu từ backend
+
     useEffect(() => {
-        getData();
-    }, [currentPage, pageSize]);
+        if (filterType && filterType !== 'none' && filterValue) {
+            getSearch();
+        } else if (startTime && endTime) {
+            getFilter();
+        } else {
+            getData();
+        }
+    }, [currentPage]);
 
     const getData = () => {
         fetch(`http://localhost:4000/datasensor?page=${currentPage}`)
@@ -34,45 +36,21 @@ function Datasensor() {
     };
 
 
-    const getNextPage = async (index) => {
-
-        if (index < totalPages) {
-            setCurrentPage(index + 1);
-            console.log("hello", currentPage, totalPages)
-            if (filterType === "none" || filterValue === null) {
-
-                getData();
-            }
-            else {
-                getSearch();
-            }
+    const getNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(prevPage => prevPage + 1);  // Tăng currentPage lên 1
         }
-    }
+    };
 
-    const getPreviousPage = (index) => {
-        if (index > 1) {
-            setCurrentPage(index - 1);
-            if (filterType === "none" || filterValue === null) {
-
-                getData();
-            }
-            else {
-                getSearch();
-            }
+    const getPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(prevPage => prevPage - 1);  // Giảm currentPage xuống 1
         }
-    }
+    };
+
 
     const getSearch = () => {
-        // fetch(`http://localhost:4000/datasensor?page=${currentPage}`)
-        //     .then((response) => response.json())
-        //     .then((result) => {
-        //         console.log(result.data)
-        //         setData(result.data);
-        //         setTotalPages(result.pagination.totalPages);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error fetching data:', error);
-        //     });
+
         fetch(`http://localhost:4000/datasensor/search?type=${filterType}&value=${filterValue}&page=${currentPage}`)
             .then((response) => response.json())
             .then((result) => {
@@ -98,13 +76,20 @@ function Datasensor() {
     };
 
     const handleSearch = () => {
-        setCurrentPage(1);
-        getSearch();
+        // if (filterType ===null && filterValue === null) {
+        setCurrentPage(1)
+        getSearch()
+
+        // }
     }
 
     const handleFiler = () => {
+        console.log("gia truj:", typeof (filterType), typeof (filterValue));
         setCurrentPage(1);
         getFilter();
+
+        setFilterValue('');  // Làm trống giá trị input tìm kiếm
+        setFilterType('none');
     }
 
     const handleFilterByTime = () => {
@@ -187,7 +172,7 @@ function Datasensor() {
                     Trang trước
                 </button>
 
-                <span>Trang {currentPage} / {totalPages}</span>
+                <span>   Trang {currentPage} / {totalPages}   </span>
 
                 <button
                     onClick={() => getNextPage(currentPage)}

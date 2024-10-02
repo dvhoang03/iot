@@ -18,4 +18,4 @@ client.on('connect', () => {
 client.on('error', (err) => {
     console.error('MQTT Connection error:', err);
 });
-module.exports= client;
+module.exports = client;

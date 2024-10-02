@@ -3,8 +3,11 @@ const db = require('../model/db');
 const MQTT_TOPIC = "datasensor";
 var express = require('express');
 var app = express();
+
+
+
 var server = require('http').createServer(app);
-// var io = require('socket.io')(server);
+// khai bao websevice
 const io = require('socket.io')(server, {
     cors: {
         origin: "http://localhost:3000",  // Địa chỉ frontend
@@ -22,6 +25,7 @@ io.on('connection', (socket) => {
     console.log('Client connected');
 });
 
+//tao bien luu du lieu
 
 
 console.log('Connected to MQTT broker');
@@ -54,6 +58,7 @@ client.subscribe("ac/res", (err) => {
     }
 });
 
+var count = 0 ;
 client.on('message', (topic, message) => {
     console.log(`Received message from ${topic}: ${message.toString()}`);
 
@@ -77,31 +82,19 @@ client.on('message', (topic, message) => {
                 console.log('Inserted data into database');
 
                 var query = 'SELECT * FROM datasensor ORDER BY id DESC LIMIT 1';
-
                 // Gửi dữ liệu tới frontend sau khi lưu thành công
                 db.query(query, (err, result) => {
                     if (err) throw err;
+                    // gui du lieu frontend
+                    if (data.light <=300 ){
+                        io.emit("controll","on");
+                    }
                     io.emit('newSensorData', result);
                     console.log("emit success", result);
                 });
             }
         });
     }
-    // else {
-    //     const query = 'INSERT INTO actionhistory (device, action) VALUES (?, ?)';
-    //     const values = [data.device, data.action];
-
-    //     db.query(query, values, (err, res) => {
-    //         if (err) {
-    //             console.error('Error executing query', err.stack);
-    //         } else {
-    //             console.log('Inserted action data into database');
-
-    //             // Gửi dữ liệu tới frontend sau khi lưu thành công
-
-    //         }
-    //     });
-    // }
 });
 
 

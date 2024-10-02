@@ -49,7 +49,7 @@ let getdata = (req, res) => {
 };
 
 let search = (req, res) => {
-    
+
     const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
     const pageSize = 10; // Kích thước trang
     const offset = (page - 1) * pageSize;
@@ -96,43 +96,6 @@ let search = (req, res) => {
         });
 
     })
-
-    // db.query(query, [pageSize, offset], (err, results) => {
-    //     if (err) {
-    //         console.error('Error executing query', err.stack);
-    //         return res.status(500).json({ error: "error" });
-    //     }
-
-    //     // Nếu cần, bạn có thể thêm một truy vấn khác để đếm tổng số bản ghi
-    //     const countQuery = 'SELECT COUNT(*) AS total FROM datasensor';
-
-    //     db.query(countQuery, (err, countResults) => {
-    //         if (err) {
-    //             console.error('Error executing count query', err.stack);
-    //             return res.status(500).json({ error: "error" });
-    //         }
-
-    //         const totalRecords = countResults[0].total;
-    //         const totalPages = Math.ceil(totalRecords / pageSize);
-
-    //         // Gửi kết quả về frontend
-    //         res.json({
-    //             pagination: {
-    //                 currentPage: page,
-    //                 totalPages: totalPages,
-    //                 totalRecords: totalRecords
-    //             },
-    //             data: results.map(row => ({
-    //                 id: row.id,
-    //                 temperature: row.temperature,
-    //                 humidity: row.humidity,
-    //                 light: row.light,
-    //                 timestamp: row.timestamp
-    //             }))
-
-    //         });
-    //     });
-    // });
 };
 
 let Filter = (req, res) => {
@@ -144,10 +107,12 @@ let Filter = (req, res) => {
     ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
 
     const starttime = req.query.starttime.replace("T", " ").concat(":00");
-
     const endtime = req.query.endtime.replace("T", " ").concat(":00");
-    console.log("strta, end", starttime, endtime);
-    const values = [starttime, endtime, pageSize, offset];
+    
+
+    console.log("start, end, type, value:", starttime, endtime);
+
+    const values = [starttime, endtime, 888, offset];
     //query
     db.query(query, values, (err, results) => {
         if (err) {
@@ -185,5 +150,6 @@ let Filter = (req, res) => {
 
     })
 };
+
 
 module.exports = { getdata, search, Filter };

@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaLightbulb } from 'react-icons/fa'; // Biểu tượng bóng đèn
 import { FaFan } from 'react-icons/fa'; // Biểu tượng quạt
 import { FaSnowflake } from 'react-icons/fa'; // Biểu tượng điều hòa
 import Switch from '@mui/material/Switch';
 import './css/Control.css';
 
-function Control() {
+function Control(props) {
     const [isFanOn, setFanOn] = useState("off");
     const [isLightOn, setLightOn] = useState("off");
     const [isAcOn, setAcOn] = useState("off");
+    var controllLed = props.controll;
+    console.log("controll datatime: ", controllLed);
+
+    console.log("led: ", isLightOn)
 
     const sendRequest = async (device, action) => {
         try {
@@ -42,6 +46,17 @@ function Control() {
             alert("loi xay ra");
         }
     };
+
+    useEffect(() => {
+        // Chỉ gửi yêu cầu nếu controllLed là "on" và đèn hiện đang tắt
+        if (controllLed === 'on' && isLightOn === "off") {
+            console.log("before auto: ", isLightOn);
+            sendRequest('led', 'on').then(() => {
+                // Sau khi đèn bật tự động, đặt controllLed thành null hoặc undefined để không bị kích hoạt lại.
+                props.setControll(null); // Giả sử bạn có thể đặt giá trị của controll từ props.
+            });
+        }
+    }, [controllLed, isLightOn, props]);
 
     const toggleFan = () => {
         const newFanState = isFanOn === 'on' ? 'off' : 'on';

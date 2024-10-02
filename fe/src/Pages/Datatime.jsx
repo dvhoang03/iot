@@ -57,6 +57,16 @@ function Datatime(props) {
                     transition: 'border-color 0.5s ease'
                 }} />
             </div>
+
+            <div className='test' >
+                <h3>test</h3>
+                <p>{lig} lx</p>
+                <hr style={{
+                    borderColor: calculateColor(lig, 0, 1000, [255, 255, 0], [255, 69, 0]), // Màu sắc từ vàng nhạt sang cam đậm
+                    borderWidth: '12px',
+                    transition: 'border-color 0.5s ease'
+                }} />
+            </div>
         </div>
     );
 }

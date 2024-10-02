@@ -47,56 +47,57 @@ let getdata = (req, res) => {
     });
 };
 
-// let search = (req, res) => {
-    
-//     const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
-//     const pageSize = 10; // Kích thước trang
-//     const offset = (page - 1) * pageSize;
-//     const { type, value } = req.query;
-//     console.log("type .value: ", type, value)
-//     // Truy vấn dữ liệu từ cơ sở dữ liệu với phân trang
-//     const query = `SELECT * FROM datasensor WHERE ${type} = ?  ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
-//     const values = [value, pageSize, offset];
+let search = (req, res) => {
 
-//     //query
-//     db.query(query, values, (err, results) => {
-//         if (err) {
-//             console.error('Error executing query', err.stack);
-//             return res.status(500).json({ error: "error" });
-//         }
+    const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
+    const pageSize = 10; // Kích thước trang
+    const offset = (page - 1) * pageSize;
+    const { type, value } = req.query;
+    console.log("type .value: ", type, value)
+    // Truy vấn dữ liệu từ cơ sở dữ liệu với phân trang
+    const query = `SELECT * FROM actionhistory 
+    WHERE device = ? AND action =? 
+    ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
+    const values = [type, value, pageSize, offset];
 
-//         const countQuery = `SELECT COUNT(*) AS total FROM datasensor where ${type} = ? `;
+    //query
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error('Error executing query', err.stack);
+            return res.status(500).json({ error: "error" });
+        }
 
-//         db.query(countQuery, value, (err, countResults) => {
-//             if (err) {
-//                 console.error('Error executing count query', err.stack);
-//                 return res.status(500).json({ error: "error" });
-//             }
+        const countQuery = `SELECT COUNT(*) AS total FROM actionhistory where device = ? AND action = ? `;
 
-//             const totalRecords = countResults[0].total;
-//             const totalPages = Math.ceil(totalRecords / pageSize);
+        db.query(countQuery, [type, value], (err, countResults) => {
+            if (err) {
+                console.error('Error executing count query', err.stack);
+                return res.status(500).json({ error: "error 1" });
+            }
 
-//             //     // Gửi kết quả về frontend
-//             res.json({
-//                 pagination: {
-//                     currentPage: page,
-//                     totalPages: totalPages,
-//                     totalRecords: totalRecords
-//                 },
-//                 data: results.map(row => ({
-//                     id: row.id,
-//                     temperature: row.temperature,
-//                     humidity: row.humidity,
-//                     light: row.light,
-//                     timestamp: row.timestamp
-//                 }))
+            const totalRecords = countResults[0].total;
+            const totalPages = Math.ceil(totalRecords / pageSize);
 
-//             });
-//         });
+            //     // Gửi kết quả về frontend
+            res.json({
+                pagination: {
+                    currentPage: page,
+                    totalPages: totalPages,
+                    totalRecords: totalRecords
+                },
+                data: results.map(row => ({
+                    id: row.id,
+                    device: row.device,
+                    action: row.action,
+                    timestamp: row.timestamp
+                }))
 
-//     })
+            });
+        });
 
-// };
+    })
+
+};
 
 let Filter = (req, res) => {
     const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
@@ -148,4 +149,4 @@ let Filter = (req, res) => {
     })
 };
 
-module.exports = { getdata, Filter };
+module.exports = { getdata, Filter, search };

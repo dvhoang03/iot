@@ -28,7 +28,7 @@ const char MQTT_PASSWORD[] = "b21dccn384";                        // CHANGE IT I
 // The MQTT topics that ESP8266 should publish/subscribe
 const char PUBLISH_TOPIC[] = "datasensor";    // CHANGE IT AS YOU DESIRE
 
-const int PUBLISH_INTERVAL = 5000;  // 5 seconds
+const int PUBLISH_INTERVAL = 2000;  // 5 seconds
 
 WiFiClient network;
 MQTTClient mqtt = MQTTClient(256);
@@ -102,7 +102,7 @@ void connectToMQTT() {
     Serial.println("ESP8266 - Subscribed to the topic: fan/req");
   else
     Serial.println("ESP8266 - Failed to subscribe to the topic: fan/req");
-    if (mqtt.subscribe("ac/req"))
+  if (mqtt.subscribe("ac/req"))
     Serial.println("ESP8266 - Subscribed to the topic: ac/req");
   else
     Serial.println("ESP8266 - Failed to subscribe to the topic: ac/req");

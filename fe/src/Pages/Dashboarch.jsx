@@ -9,6 +9,7 @@ const socket = io('http://localhost:8080'); // Địa chỉ của server backend
 
 function Dashboarch() {
     const [sensorData, setSensorData] = useState(null);
+    const [controll,setControll] = useState(null);
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -29,17 +30,22 @@ function Dashboarch() {
             setSensorData(data);
         });
 
+        socket.on('controll', (data) => {
+            console.log('Received new controll data:', data, "typeof: ", typeof (sensorData));
+            setControll(data);
+        });
+
         return () => {
             socket.off('newSensorData');
         };
+
     }, []);
-
-    console.log("data nhan duoc ơ dashboard sensordata", sensorData);
-
+    console.log('Received  data:', sensorData, "typeof: ", typeof (sensorData));
+    console.log("controll received: ",controll, "type of", typeof(controll));
     return (
         <div className='dashboard-main'>
             <div>
-                <Control />
+                <Control controll = {controll} setControll={setControll}  />
             </div>
             <div className="">
                 <Datatime

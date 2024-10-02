@@ -23,6 +23,9 @@ function profile() {
                 <div>File báo cáo: <a href={baocao} download="Profile.pdf" >
                     Tải xuống
                 </a></div>
+                <div>File báo cáo: <a href={baocao} download="Profile.pdf" >
+                    Tải xuống
+                </a></div>
                 <p>github: <a href='https://github.com/dvhoang03/iot'>link</a> </p>
             </div>
         </div>
