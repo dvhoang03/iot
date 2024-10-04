@@ -58,6 +58,7 @@ export default function Linechart(props) {
                     data: [...prevData.datasets[0].data.slice(-MAX_DATA_POINTS + 1), temperature] // Giữ lại MAX_DATA_POINTS gần nhất
                 }]
             }));
+            
 
             // Append new data to Humidity chart
             setHChartData((prevData) => ({
