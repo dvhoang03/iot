@@ -4,9 +4,9 @@ const { default: start } = require('mqtt/bin/pub');
 
 let getdata = (req, res) => {
     const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
-    const pageSize = 10; // Kích thước trang
+    const pageSize = parseInt(req.query.pagesize); // Kích thước trang
     const offset = (page - 1) * pageSize; // Tính toán offset
-
+    console.log(page, pageSize);
     // Truy vấn dữ liệu từ cơ sở dữ liệu với phân trang
     const query = 'SELECT * FROM datasensor ORDER BY timestamp ASC LIMIT ? OFFSET ?';
 
@@ -51,80 +51,28 @@ let getdata = (req, res) => {
 let search = (req, res) => {
 
     const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
-    const pageSize = 10; // Kích thước trang
+    const pageSize = parseInt(req.query.pagesize); // Kích thước trang
     const offset = (page - 1) * pageSize;
-    const { type, value } = req.query;
-    console.log("type .value: ", type, value)
+    const value = req.query.value.replace("T", " ").concat("");
+    console.log("type .value: ", value)
     // Truy vấn dữ liệu từ cơ sở dữ liệu với phân trang
-    const query = `SELECT * FROM datasensor WHERE ${type} = ?  ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
-    const values = [value, pageSize, offset];
+    const query = `SELECT * FROM datasensor WHERE timestamp LIKE "${value}%"  ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
 
+
+    const values = [pageSize, offset];
     //query
     db.query(query, values, (err, results) => {
         if (err) {
             console.error('Error executing query', err.stack);
-            return res.status(500).json({ error: "error" });
+            return res.status(500).json({ error: "error1" });
         }
 
-        const countQuery = `SELECT COUNT(*) AS total FROM datasensor where ${type} = ? `;
+        const countQuery = `SELECT COUNT(*) AS total FROM datasensor where timestamp LIKE "${value}%" `;
 
         db.query(countQuery, value, (err, countResults) => {
             if (err) {
                 console.error('Error executing count query', err.stack);
-                return res.status(500).json({ error: "error" });
-            }
-
-            const totalRecords = countResults[0].total;
-            const totalPages = Math.ceil(totalRecords / pageSize);
-
-            //     // Gửi kết quả về frontend
-            res.json({
-                pagination: {
-                    currentPage: page,
-                    totalPages: totalPages,
-                    totalRecords: totalRecords
-                },
-                data: results.map(row => ({
-                    id: row.id,
-                    temperature: row.temperature,
-                    humidity: row.humidity,
-                    light: row.light,
-                    timestamp: row.timestamp
-                }))
-
-            });
-        });
-
-    })
-};
-
-let Filter = (req, res) => {
-    const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
-    const pageSize = 10; // Kích thước trang
-    const offset = (page - 1) * pageSize;
-    const query = `SELECT * FROM datasensor 
-    WHERE timestamp >= ? AND timestamp <= ? 
-    ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
-
-    const starttime = req.query.starttime.replace("T", " ").concat(":00");
-    const endtime = req.query.endtime.replace("T", " ").concat(":00");
-    
-
-    console.log("start, end, type, value:", starttime, endtime);
-
-    const values = [starttime, endtime, 888, offset];
-    //query
-    db.query(query, values, (err, results) => {
-        if (err) {
-            console.error('Error executing query', err.stack);
-            return res.status(500).json({ error: "error 1" });
-        }
-        const countQuery = `SELECT COUNT(*) AS total FROM datasensor  WHERE timestamp >= ? AND timestamp <= ?  `;
-
-        db.query(countQuery, [starttime, endtime], (err, countResults) => {
-            if (err) {
-                console.error('Error executing count query', err.stack);
-                return res.status(500).json({ error: "error 2" });
+                return res.status(500).json({ error: "error2" });
             }
 
             const totalRecords = countResults[0].total;
@@ -152,4 +100,6 @@ let Filter = (req, res) => {
 };
 
 
-module.exports = { getdata, search, Filter };
+
+
+module.exports = { getdata, search };

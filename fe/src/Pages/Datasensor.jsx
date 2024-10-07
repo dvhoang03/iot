@@ -3,27 +3,22 @@ import './css/Datasensor.css'
 
 function Datasensor() {
     const [data, setData] = useState([]); // Dữ liệu từ backend
-    const [filterType, setFilterType] = useState(null);
     const [filterValue, setFilterValue] = useState(null);
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10); // Số dòng hiển thị mỗi trang
     const [totalPages, setTotalPages] = useState(0); // Tổng số trang
 
 
     useEffect(() => {
-        if (filterType && filterType !== 'none' && filterValue) {
+        if (filterValue) {
             getSearch();
-        } else if (startTime && endTime) {
-            getFilter();
         } else {
             getData();
         }
-    }, [currentPage]);
+    }, [currentPage, pageSize]);
 
     const getData = () => {
-        fetch(`http://localhost:4000/datasensor?page=${currentPage}`)
+        fetch(`http://localhost:4000/datasensor?pagesize=${pageSize}&page=${currentPage}`)
             .then((response) => response.json())
             .then((result) => {
                 console.log(result.data)
@@ -51,7 +46,7 @@ function Datasensor() {
 
     const getSearch = () => {
 
-        fetch(`http://localhost:4000/datasensor/search?type=${filterType}&value=${filterValue}&page=${currentPage}`)
+        fetch(`http://localhost:4000/datasensor/search?pagesize=${pageSize}&value=${filterValue}&page=${currentPage}`)
             .then((response) => response.json())
             .then((result) => {
                 console.log(result.data)
@@ -62,18 +57,6 @@ function Datasensor() {
             });
     };
 
-    const getFilter = () => {
-
-        fetch(`http://localhost:4000/datasensor/filter?starttime=${startTime}&endtime=${endTime}&page=${currentPage}`)
-            .then((response) => response.json())
-            .then((result) => {
-                console.log(result.data)
-                setData(result.data);
-                setTotalPages(result.pagination.totalPages);
-            }).catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    };
 
     const handleSearch = () => {
         // if (filterType ===null && filterValue === null) {
@@ -82,19 +65,6 @@ function Datasensor() {
 
         // }
     }
-
-    const handleFiler = () => {
-        console.log("gia truj:", typeof (filterType), typeof (filterValue));
-        setCurrentPage(1);
-        getFilter();
-
-        setFilterValue('');  // Làm trống giá trị input tìm kiếm
-        setFilterType('none');
-    }
-
-    const handleFilterByTime = () => {
-
-    };
 
     // Tính toán dữ liệu để hiển thị trên trang hiện tại
     // const indexOfLastItem = currentPage * pageSize;
@@ -106,40 +76,27 @@ function Datasensor() {
             <div className='search'>
                 <input
                     type="text"
-                    placeholder="Nhập giá trị tìm kiếm"
+                    placeholder=" định dạng yyyy-mm-ddThh:mm"
                     value={filterValue}
                     onChange={(e) => setFilterValue(e.target.value)}
                 />
+                Page Size:
 
                 <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
+                    value={pageSize}
+                    onChange={(e) => setPageSize(e.target.value)}
                 >
-                    <option value="none">No</option>
-                    <option value="temperature">Temperature</option>
-                    <option value="light">Light</option>
-                    <option value="humidity">Humidity</option>
+
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
 
                 </select>
 
                 <button onClick={handleSearch}>Tìm kiếm</button>
             </div>
 
-            <div>
-                <input
-                    type="datetime-local"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                />
 
-                <input
-                    type="datetime-local"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                />
-
-                <button onClick={handleFiler}>Lọc</button>
-            </div>
 
             <table>
                 <thead>

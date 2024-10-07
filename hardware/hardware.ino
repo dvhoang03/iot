@@ -16,10 +16,10 @@
 DHT dht_sensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 
 
-const char WIFI_SSID[] = "TP-LINK_799568";     // CHANGE TO YOUR WIFI SSID
-const char WIFI_PASSWORD[] = "99990000";  // CHANGE TO YOUR WIFI PASSWORD
+const char WIFI_SSID[] = "Hello";     // CHANGE TO YOUR WIFI SSID
+const char WIFI_PASSWORD[] = "12345678";  // CHANGE TO YOUR WIFI PASSWORD
 
-const char MQTT_BROKER_ADRRESS[] = "192.168.5.105";  // CHANGE TO MQTT BROKER'S ADDRESS
+const char MQTT_BROKER_ADRRESS[] = "172.20.10.4";  // CHANGE TO MQTT BROKER'S ADDRESS
 const int MQTT_PORT = 1883;
 const char MQTT_CLIENT_ID[] = "dvh";  // CHANGE IT AS YOU DESIRE
 const char MQTT_USERNAME[] = "hoang";                        // CHANGE IT IF REQUIRED, empty if not required
@@ -28,7 +28,7 @@ const char MQTT_PASSWORD[] = "b21dccn384";                        // CHANGE IT I
 // The MQTT topics that ESP8266 should publish/subscribe
 const char PUBLISH_TOPIC[] = "datasensor";    // CHANGE IT AS YOU DESIRE
 
-const int PUBLISH_INTERVAL = 2000;  // 5 seconds
+const int PUBLISH_INTERVAL = 30000;  // 5 seconds
 
 WiFiClient network;
 MQTTClient mqtt = MQTTClient(256);

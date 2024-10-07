@@ -3,30 +3,29 @@ import './css/Actionhistory.css'
 
 function Actionhistory() {
     const [data, setData] = useState([]);
-    const [filterValue, setFilterValue] = useState("none");
-    const [filterType, setFilterType] = useState("none");
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+    const [filterValue, setFilterValue] = useState();
+
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10); // Số dòng hiển thị mỗi trang
     const [totalPages, setTotalPages] = useState(0); // Tổng số trang
 
 
-    console.log(filterType, filterValue)
+    // console.log( filterValue)
     useEffect(() => {
         // Kiểm tra xem có filter theo thời gian không
-        if (filterType != "none" && filterValue != "none") {
+        if (filterValue) {
             getSearch();
         }
-        else if (startTime && endTime) {
-            getFilter();
-        }
-        else { getData(); }
 
-    }, [currentPage]);
+        else {
+            getData();
+        }
+
+    }, [currentPage, pageSize]);
 
     const getData = () => {
-        fetch(`http://localhost:4000/actionhistory?page=${currentPage}`)
+        fetch(`http://localhost:4000/actionhistory?pagesize=${pageSize}&page=${currentPage}`)
+            //    http://localhost:4000/actionhistory?pagesize=20&page=1
             .then((response) => response.json())
             .then((result) => {
                 setData(result.data);
@@ -38,8 +37,8 @@ function Actionhistory() {
     };
 
     const getSearch = () => {
-        console.log("get filter:", filterType, filterValue, currentPage, totalPages)
-        fetch(`http://localhost:4000/actionhistory/search?type=${filterType}&value=${filterValue}&page=${currentPage}`)
+        console.log("get filter:", filterValue, currentPage, totalPages)
+        fetch(`http://localhost:4000/actionhistory/search?pagesize=${pageSize}&page=${currentPage}&value=${filterValue}`)
             .then((response) => response.json())
             .then((result) => {
                 setData(result.data);
@@ -50,84 +49,47 @@ function Actionhistory() {
             });
     };
 
-    const getFilter = () => {
-        console.log("get filter:", startTime, endTime, currentPage, totalPages)
-        fetch(`http://localhost:4000/actionhistory/filter?starttime=${startTime}&endtime=${endTime}&page=${currentPage}`)
-            .then((response) => response.json())
-            .then((result) => {
-                setData(result.data);
-                setTotalPages(result.pagination.totalPages);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    };
+
 
     const getNextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(prevPage => prevPage + 1);  // Tăng currentPage lên 1
-
         }
     };
 
     const getPreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(prevPage => prevPage - 1);  // Giảm currentPage xuống 1
-
         }
     };
 
     const handleSearch = () => {
         setCurrentPage(1);
-        getSearch()
-
+        getSearch();
     }
 
-    const handleFilterByTime = () => {
-        setCurrentPage(1); // Reset về trang 1 khi lọc mới
-        getFilter();
-    };
+
 
     return (
         <div className='actionhistory'>
             <div className="search">
-                <select
+                <input
+                    type="text"
+                    placeholder=" định dạng yyyy-mm-ddThh:mm"
                     value={filterValue}
                     onChange={(e) => setFilterValue(e.target.value)}
-                >
-                    <option value="none">No</option>
-                    <option value="on">on</option>
-                    <option value="off">off</option>
-
-                </select>
+                />
+                Page Sise:
                 <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
+                    value={pageSize}
+                    onChange={(e) => setPageSize(e.target.value)}
                 >
-                    <option value="none">No</option>
-                    <option value="led">led</option>
-                    <option value="fan">fan</option>
-                    <option value="ac">ac</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
                 </select>
                 <button onClick={handleSearch}>Tìm kiếm</button>
 
-            </div>
-            <div>
-                <label>Start Time: </label>
-                <input
-                    type="datetime-local"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                />
-
-                <label>End Time: </label>
-                <input
-                    type="datetime-local"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                />
-
-                <button onClick={handleFilterByTime}>Lọc</button>
             </div>
 
             <div>

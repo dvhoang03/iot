@@ -2,3 +2,7 @@
     background: linear-gradient(180deg, #fde1ff, #e1ffea22 70%);
     padding: 100px;
 }
+
+.chart {
+    display: grid 1, 1;
+}

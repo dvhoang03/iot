@@ -63,6 +63,8 @@ client.on('message', (topic, message) => {
     console.log(`Received message from ${topic}: ${message.toString()}`);
 
     let data;
+
+    //lấy data từ message
     try {
         // Parse the message into JSON
         data = JSON.parse(message.toString());
@@ -85,13 +87,19 @@ client.on('message', (topic, message) => {
                 // Gửi dữ liệu tới frontend sau khi lưu thành công
                 db.query(query, (err, result) => {
                     if (err) throw err;
-                    // gui du lieu frontend
-                    if (data.light <=300 ){
-                        io.emit("controll","on");
-                    }
+                    
+                    // Tạo giá trị dust ngẫu nhiên
+                    let dust = Math.floor(Math.random() * (100 - 1) + 1);
+                
+                    // Thêm dust vào result
+                    result[0].dust = dust;
+                
+                    // Gửi dữ liệu đã chỉnh sửa tới frontend
                     io.emit('newSensorData', result);
+                
                     console.log("emit success", result);
                 });
+                
             }
         });
     }
