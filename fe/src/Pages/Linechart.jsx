@@ -3,28 +3,26 @@ import ReactApexChart from 'react-apexcharts';
 import './css/LineChart.css';
 
 const Linechart = (props) => {
-    const { light, humidity, temperature, dust, timestamp } = props.sensorData; // Lấy trực tiếp các giá trị từ props
+    const sensorDataArray = props.dataChart;
+    // console.log("datachartoo linechart: ", dataChart);
+    const { light, humidity, temperature, timestamp } = props.sensorData; // Không lấy giá trị dust
 
     const [series, setSeries] = useState([
         {
             name: 'Light',
-            data: []
+            data: sensorDataArray.map(data => sensorDataArray.light)
         },
         {
             name: 'Humidity',
-            data: []
+            data: sensorDataArray.map(data => sensorDataArray.humidity)
         },
         {
             name: 'Temperature',
-            data: []
-        },
-        {
-            name: 'Dust',
-            data: []
+            data: sensorDataArray.map(data => sensorDataArray.temperature)
         }
     ]);
 
-    const [timestamps, setTimestamps] = useState([]); // Mảng lưu các timestamp
+    const [timestamps, setTimestamps] = useState(sensorDataArray.map(data => sensorDataArray.timestamp)); // Mảng lưu các timestamp
 
     const [options, setOptions] = useState({
         chart: {
@@ -45,7 +43,7 @@ const Linechart = (props) => {
                 show: false
             }
         },
-        colors: ['#f10e0e', '#4003f6', '#000000','#08eb48'],
+        colors: ['#f10e0e', '#4003f6', '#000000'], // Không cần màu cho Dust
         dataLabels: {
             enabled: true
         },
@@ -54,7 +52,7 @@ const Linechart = (props) => {
             width: 1.5
         },
         title: {
-            text: 'Light, Humidity & Temperature Dust Levels',
+            text: 'Light, Humidity & Temperature Levels',
             align: 'center'
         },
         grid: {
@@ -99,7 +97,6 @@ const Linechart = (props) => {
                     }
                 }
             },
-
             {
                 title: {
                     text: 'Temperature'
@@ -109,18 +106,6 @@ const Linechart = (props) => {
                 labels: {
                     style: {
                         colors: ['#000000']
-                    }
-                }
-            },
-            {
-                title: {
-                    text: 'Dust'
-                },
-                min: 0,
-                max: 100,
-                labels: {
-                    style: {
-                        colors: ['#08eb48']
                     }
                 }
             }
@@ -136,13 +121,12 @@ const Linechart = (props) => {
 
     // Hàm này sẽ được gọi khi nhận data mới từ component cha
     useEffect(() => {
-        // Kiểm tra nếu các giá trị trong props không undefined
-        if (light !== undefined && humidity !== undefined && temperature !== undefined && dust !== undefined && timestamp) {
-            // Cập nhật mảng dữ liệu
+        if (light !== undefined && humidity !== undefined && temperature !== undefined && timestamp) {
+            // Cập nhật mảng dữ liệu, không cần xử lý dust
             setSeries((prevSeries) => [
                 {
                     ...prevSeries[0], // Light
-                    data: [...prevSeries[0].data, light].slice(-15) // Giữ lại 10 giá trị cuối cùng
+                    data: [...prevSeries[0].data, light].slice(-15) // Giữ lại 15 giá trị cuối cùng
                 },
                 {
                     ...prevSeries[1], // Humidity
@@ -151,17 +135,37 @@ const Linechart = (props) => {
                 {
                     ...prevSeries[2], // Temperature
                     data: [...prevSeries[2].data, temperature].slice(-15)
-                },
-                {
-                    ...prevSeries[3], // Dust
-                    data: [...prevSeries[3].data, dust].slice(-15)
                 }
             ]);
 
-            // Cập nhật mảng timestamp, chỉ giữ lại 10 timestamp gần nhất
+            // Cập nhật mảng timestamp
             setTimestamps((prevTimestamps) => [...prevTimestamps, timestamp].slice(-15));
         }
-    }, [light, humidity, temperature, dust, timestamp]); // Theo dõi sự thay đổi của từng giá trị trong props
+    }, [light, humidity, temperature, timestamp]); // Không theo dõi dust
+
+    useEffect(() => {
+        if (sensorDataArray.length) {
+
+            console.log("data ỏ lne1:", sensorDataArray)
+            setSeries([
+                {
+                    name: 'Light',
+                    data: sensorDataArray.map(data => data.light)
+                },
+                {
+                    name: 'Humidity',
+                    data: sensorDataArray.map(data => data.humidity)
+                },
+                {
+                    name: 'Temperature',
+                    data: sensorDataArray.map(data => data.temperature)
+                }
+            ]);
+
+            setTimestamps(sensorDataArray.map(data => data.timestamp));
+        }
+    }, [sensorDataArray]);
+
 
     return (
         <div>

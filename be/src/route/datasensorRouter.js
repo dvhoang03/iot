@@ -4,6 +4,8 @@ var router = express.Router();
 const datasensorController = require('../controller/datasensorController')
 
 router.get('/search', datasensorController.search)
+
+router.get('/sort',datasensorController.sort );
 router.get('/',datasensorController.getdata );
 
 

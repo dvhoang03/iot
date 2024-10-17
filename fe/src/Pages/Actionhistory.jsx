@@ -1,31 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns'; // Thêm import cho date-fns
 import './css/Actionhistory.css'
 
 function Actionhistory() {
     const [data, setData] = useState([]);
     const [filterValue, setFilterValue] = useState();
-
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10); // Số dòng hiển thị mỗi trang
-    const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+    const [page, setPages] = useState(0);
 
-
-    // console.log( filterValue)
     useEffect(() => {
-        // Kiểm tra xem có filter theo thời gian không
         if (filterValue) {
             getSearch();
-        }
-
-        else {
+        } else {
             getData();
         }
-
     }, [currentPage, pageSize]);
 
     const getData = () => {
         fetch(`http://localhost:4000/actionhistory?pagesize=${pageSize}&page=${currentPage}`)
-            //    http://localhost:4000/actionhistory?pagesize=20&page=1
             .then((response) => response.json())
             .then((result) => {
                 setData(result.data);
@@ -37,7 +31,6 @@ function Actionhistory() {
     };
 
     const getSearch = () => {
-        console.log("get filter:", filterValue, currentPage, totalPages)
         fetch(`http://localhost:4000/actionhistory/search?pagesize=${pageSize}&page=${currentPage}&value=${filterValue}`)
             .then((response) => response.json())
             .then((result) => {
@@ -49,37 +42,33 @@ function Actionhistory() {
             });
     };
 
-
-
     const getNextPage = () => {
         if (currentPage < totalPages) {
-            setCurrentPage(prevPage => prevPage + 1);  // Tăng currentPage lên 1
+            setCurrentPage(prevPage => prevPage + 1);
         }
     };
 
     const getPreviousPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(prevPage => prevPage - 1);  // Giảm currentPage xuống 1
+            setCurrentPage(prevPage => prevPage - 1);
         }
     };
 
     const handleSearch = () => {
         setCurrentPage(1);
         getSearch();
-    }
-
-
+    };
 
     return (
         <div className='actionhistory'>
             <div className="search">
                 <input
                     type="text"
-                    placeholder=" định dạng yyyy-mm-ddThh:mm"
+                    placeholder="nhap thoi gian"
                     value={filterValue}
                     onChange={(e) => setFilterValue(e.target.value)}
                 />
-                Page Sise:
+                Page Size:
                 <select
                     value={pageSize}
                     onChange={(e) => setPageSize(e.target.value)}
@@ -89,7 +78,6 @@ function Actionhistory() {
                     <option value="50">50</option>
                 </select>
                 <button onClick={handleSearch}>Tìm kiếm</button>
-
             </div>
 
             <div>
@@ -108,7 +96,7 @@ function Actionhistory() {
                                 <td>{item.id}</td>
                                 <td>{item.device}</td>
                                 <td>{item.action}</td>
-                                <td>{new Date(item.timestamp).toLocaleString()}</td>
+                                <td>{format(new Date(item.timestamp), 'yyyy-MM-dd HH:mm:ss')}</td> {/* Định dạng thời gian */}
                             </tr>
                         ))}
                     </tbody>
@@ -130,6 +118,21 @@ function Actionhistory() {
                     disabled={currentPage >= totalPages}
                 >
                     Trang sau
+                </button>
+            </div>
+
+            <div className="gotopage">
+                Go to Page: 
+                <input type="text" 
+                placeholder=" nhap page"
+                onChange={(e) => setPages(e.target.value)}
+                
+                />
+
+                <button
+                    onClick={() => setCurrentPage(page)}
+                >
+                    Goto
                 </button>
             </div>
         </div>

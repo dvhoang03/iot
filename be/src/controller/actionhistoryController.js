@@ -47,16 +47,17 @@ let getdata = (req, res) => {
     });
 };
 
+
+
 let search = (req, res) => {
 
     const page = parseInt(req.query.page) || 1; // Lấy số trang từ query parameter, mặc định là 1
     const pageSize = parseInt(req.query.pagesize); // Kích thước trang
     const offset = (page - 1) * pageSize;
     const value = req.query.value.replace("T", " ").concat("");
-    console.log("type .value: ",  value)
     // Truy vấn dữ liệu từ cơ sở dữ liệu với phân trang
     const query = `SELECT * FROM actionhistory 
-    WHERE timestamp LIKE "${value}%"
+    WHERE timestamp LIKE "%${value}%"
     ORDER BY timestamp ASC LIMIT ? OFFSET ?`;
     const values = [pageSize, offset];
 
@@ -67,7 +68,7 @@ let search = (req, res) => {
             return res.status(500).json({ error: "error" });
         }
 
-        const countQuery = `SELECT COUNT(*) AS total FROM actionhistory where timestamp LIKE "${value}%" `;
+        const countQuery = `SELECT COUNT(*) AS total FROM actionhistory where timestamp LIKE "%${value}%" `;
 
         db.query(countQuery, (err, countResults) => {
             if (err) {

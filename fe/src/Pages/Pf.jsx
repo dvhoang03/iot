@@ -1,6 +1,6 @@
 import React from 'react'
 import image from '../Components/Assets/image.png'
-import baocao from "../Components/Assets/baocao.pdf"
+import bc from "../Components/Assets/bc.pdf"
 import "./css/Pf.css"
 
 function profile() {
@@ -20,10 +20,8 @@ function profile() {
 
                 <p>Mã Sinh Viên: B21DCCN384</p>
 
-                <div>File báo cáo: <a href={baocao} download="Profile.pdf" >
-                    Tải xuống
-                </a></div>
-                <div>File báo cáo: <a href={baocao} download="Profile.pdf" >
+                
+                <div>File báo cáo: <a href={bc} download="Profile.pdf" >
                     Tải xuống
                 </a></div>
                 <p>github: <a href='https://github.com/dvhoang03/iot'>link</a> </p>

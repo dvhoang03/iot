@@ -10,7 +10,7 @@
     align-items: center;
 }
 
-.datasensor input {
+.search input {
     border: 1px solid #ccc;
     display: inline-block;
     padding: 6px 12px;
@@ -88,4 +88,10 @@ td {
     padding: 6px 12px;
     margin-right: 10px;
     margin-left: 5px;
+}
+
+.abc input {
+    width: 20px !important;
+    margin: 0 10px 0 10px;
+    padding: 5px;
 }

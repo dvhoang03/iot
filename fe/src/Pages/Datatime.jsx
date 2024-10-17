@@ -6,25 +6,47 @@ function Datatime(props) {
     const [hum, setHumidity] = useState(100); // Dữ liệu ban đầu cho độ ẩm
     const [lig, setLight] = useState(10); // Dữ liệu ban đầu cho ánh sáng
     const [du, setDust] = useState(80); // Dữ liệu ban đầu cho bụi
+    
+    const datatime = props.dataDatetime;
 
     console.log("data props ở datatime: ", props);
     const { light, humidity, temperature, dust } = props;
-    console.log(light, humidity, temperature, dust);
+    // console.log(light, humidity, temperature, dust);
     // Cập nhật các giá trị khi nhận được data mới từ props, chỉ khi data không phải null hoặc undefined
     useEffect(() => {
-        if (light != null) {
+        console.log(light, humidity, temperature, dust)
+        if (light != null && light !=0 ) {
             setLight(light);
         }
-        if (humidity != null) {
+        if (humidity != null && humidity != 0) {
             setHumidity(humidity);
         }
-        if (temperature != null) {
+        if (temperature != null && temperature !=0) {
             setTemperature(temperature);
         }
-        if (dust != null) {
+        if (dust != null && dust !=0) {
             setDust(dust); // Cập nhật giá trị dust
         }
     }, [light, humidity, temperature, dust]);  // Theo dõi sự thay đổi của các props
+
+    useEffect(() => {
+        
+        if( datatime){
+            console.log("du lieu ơ data time: ",datatime)
+            // if (datatime.light != null) {
+                setLight(datatime.light);
+            // }
+            // if (datatime.humidity != null) {
+                setHumidity(datatime.humidity);
+            // }
+            // if (datatime.temperature != null) {
+                setTemperature(datatime.temperature);
+            // }
+            // if (datatime.dust != null) {
+                setDust(datatime.dust); // Cập nhật giá trị dust
+            // }
+        }
+    }, [datatime]); 
 
     const calculateColor = (value, min, max, colorStart, colorEnd) => {
         const ratio = (value - min) / (max - min);
@@ -72,7 +94,7 @@ function Datatime(props) {
                     transition: 'border-color 0.5s ease'
                 }} />
                 {/* Hiển thị icon nhấp nháy nếu dust vượt quá ngưỡng */}
-                {du > 70 ? (
+                {du > 800 ? (
                     <div className="warning-icon">
                         <i className="fas fa-exclamation-circle"></i>
                     </div>
@@ -81,8 +103,11 @@ function Datatime(props) {
                     null
                 )}
             </div>
+
         </div>
     );
 }
 
 export default Datatime;
+
+
