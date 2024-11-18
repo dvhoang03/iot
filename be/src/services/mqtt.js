@@ -15,20 +15,16 @@ const io = require('socket.io')(server, {
     }
 });
 
-// Khởi động server
+// Khởi động websevice
 server.listen(8080, () => {
     console.log('wedsocket is running on port 8080');
 });
-
 // Khi một client kết nối đến WebSocket
 io.on('connection', (socket) => {
     console.log('Client connected');
 });
 
-//tao bien luu du lieu
 
-
-console.log('Connected to MQTT broker');
 client.subscribe(MQTT_TOPIC, (err) => {
     if (!err) {
         console.log(`Subscribed to topic: ${MQTT_TOPIC}`);
@@ -58,11 +54,11 @@ client.subscribe("ac/res", (err) => {
     }
 });
 
-var count = 0 ;
+var count = 0;
 client.on('message', (topic, message) => {
     console.log(`Received message from ${topic}: ${message.toString()}`);
-
     let data;
+    //lấy data từ message
     try {
         // Parse the message into JSON
         data = JSON.parse(message.toString());
@@ -72,9 +68,34 @@ client.on('message', (topic, message) => {
     }
 
     if (topic === 'datasensor') {
-        var query = 'INSERT INTO datasensor (light, humidity, temperature) VALUES (?, ?, ?)';
-        var values = [data.light, data.humidity, data.temperature];
 
+        var query = 'INSERT INTO datasensor (light, humidity, temperature,dust) VALUES (?, ?, ?, ?)';
+        var values = [data.light, data.humidity, data.temperature, data.dust];
+
+        //bật đen cảnh báo
+        if (data.dust > 800) {
+            // const warningMessage = JSON.stringify({  'on' });
+
+            // Gửi thông báo tới topic 'warn/req'
+            client.publish('warn/req', 'on', (err) => {
+                if (err) {
+                    console.error('Error publishing warning message:', err);
+                } else {
+                    console.log('Published warning message to warn/req:', "on");
+                }
+            });
+        }
+        else if ((data.dust < 300)) {
+            client.publish('warn/req', 'off', (err) => {
+                if (err) {
+                    console.error('Error publishing warning message:', err);
+                } else {
+                    console.log('Published warning message to warn/req:', "off");
+                }
+            });
+        }
+
+        //truy van du lieu 
         db.query(query, values, (err, res) => {
             if (err) {
                 console.error('Error executing query', err.stack);
@@ -85,13 +106,15 @@ client.on('message', (topic, message) => {
                 // Gửi dữ liệu tới frontend sau khi lưu thành công
                 db.query(query, (err, result) => {
                     if (err) throw err;
-                    // gui du lieu frontend
-                    if (data.light <=300 ){
-                        io.emit("controll","on");
-                    }
+
+
+
+                    // Gửi dữ liệu đã chỉnh sửa tới frontend
                     io.emit('newSensorData', result);
+
                     console.log("emit success", result);
                 });
+
             }
         });
     }

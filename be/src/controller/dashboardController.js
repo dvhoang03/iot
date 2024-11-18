@@ -19,7 +19,6 @@ let controll = (req, res) => {
     // Lắng nghe phản hồi từ MQTT
     client.once('message', (responseTopic, mqttMessage) => {
 
-
         // Kiểm tra nếu phản hồi là từ thiết bị đang điều khiển
         if (responseTopic === `${topic}/res`) {
             console.log(`Received message from ${responseTopic}: ${mqttMessage.toString()}`);
@@ -50,4 +49,45 @@ let controll = (req, res) => {
     });
 };
 
-module.exports = { controll };
+let getwarn = (req, res) => {
+    const query1 = 'SELECT COUNT(*) AS total FROM datasensor WHERE dust > 800;';
+
+    db.query(query1, (err, totalOnResult) => {
+        if (err) {
+            console.error('Error executing query', err.stack);
+            return res.status(500).json({ error: 'Failed to retrieve data from the database' });
+        } else {
+            // Truy cập vào trường 'total' được trả về từ kết quả
+            return res.status(200).json({
+                "totalWarn": totalOnResult[0].total
+            });
+        }
+    });
+};
+
+const getchart = (req, res ) => {
+    const query = "SELECT * FROM datasensor ORDER BY `timestamp` DESC LIMIT 15 OFFSET 0"
+
+    db.query(query, (err, result)=>{
+        if(err) {
+            console,log("loi khi truy van");
+            return res.status(500).json({ error: 'Failed to retrieve data from the database' });
+        }
+        else {
+            res.json( {
+                data:result.map(row =>(
+                    {
+                        id: row.id,
+                        temperature: row.temperature,
+                        humidity: row.humidity,
+                        light: row.light,
+                        dust: row.dust,
+                        timestamp: row.timestamp
+                    }))
+            })
+        }
+    })
+}
+
+
+module.exports = { controll, getwarn, getchart };

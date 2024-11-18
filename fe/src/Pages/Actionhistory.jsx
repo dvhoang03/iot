@@ -1,32 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns'; // Thêm import cho date-fns
 import './css/Actionhistory.css'
 
 function Actionhistory() {
     const [data, setData] = useState([]);
-    const [filterValue, setFilterValue] = useState("none");
-    const [filterType, setFilterType] = useState("none");
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+    const [filterValue, setFilterValue] = useState();
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10); // Số dòng hiển thị mỗi trang
-    const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+    const [page, setPages] = useState(0);
 
-
-    console.log(filterType, filterValue)
     useEffect(() => {
-        // Kiểm tra xem có filter theo thời gian không
-        if (filterType != "none" && filterValue != "none") {
+        if (filterValue) {
             getSearch();
+        } else {
+            getData();
         }
-        else if (startTime && endTime) {
-            getFilter();
-        }
-        else { getData(); }
-
-    }, [currentPage]);
+    }, [currentPage, pageSize]);
 
     const getData = () => {
-        fetch(`http://localhost:4000/actionhistory?page=${currentPage}`)
+        fetch(`http://localhost:4000/actionhistory?pagesize=${pageSize}&page=${currentPage}`)
             .then((response) => response.json())
             .then((result) => {
                 setData(result.data);
@@ -38,21 +31,7 @@ function Actionhistory() {
     };
 
     const getSearch = () => {
-        console.log("get filter:", filterType, filterValue, currentPage, totalPages)
-        fetch(`http://localhost:4000/actionhistory/search?type=${filterType}&value=${filterValue}&page=${currentPage}`)
-            .then((response) => response.json())
-            .then((result) => {
-                setData(result.data);
-                setTotalPages(result.pagination.totalPages);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    };
-
-    const getFilter = () => {
-        console.log("get filter:", startTime, endTime, currentPage, totalPages)
-        fetch(`http://localhost:4000/actionhistory/filter?starttime=${startTime}&endtime=${endTime}&page=${currentPage}`)
+        fetch(`http://localhost:4000/actionhistory/search?pagesize=${pageSize}&page=${currentPage}&value=${filterValue}`)
             .then((response) => response.json())
             .then((result) => {
                 setData(result.data);
@@ -65,69 +44,40 @@ function Actionhistory() {
 
     const getNextPage = () => {
         if (currentPage < totalPages) {
-            setCurrentPage(prevPage => prevPage + 1);  // Tăng currentPage lên 1
-
+            setCurrentPage(prevPage => prevPage + 1);
         }
     };
 
     const getPreviousPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(prevPage => prevPage - 1);  // Giảm currentPage xuống 1
-
+            setCurrentPage(prevPage => prevPage - 1);
         }
     };
 
     const handleSearch = () => {
         setCurrentPage(1);
-        getSearch()
-
-    }
-
-    const handleFilterByTime = () => {
-        setCurrentPage(1); // Reset về trang 1 khi lọc mới
-        getFilter();
+        getSearch();
     };
 
     return (
         <div className='actionhistory'>
             <div className="search">
-                <select
+                <input
+                    type="text"
+                    placeholder="nhap thoi gian"
                     value={filterValue}
                     onChange={(e) => setFilterValue(e.target.value)}
-                >
-                    <option value="none">No</option>
-                    <option value="on">on</option>
-                    <option value="off">off</option>
-
-                </select>
+                />
+                Page Size:
                 <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
+                    value={pageSize}
+                    onChange={(e) => setPageSize(e.target.value)}
                 >
-                    <option value="none">No</option>
-                    <option value="led">led</option>
-                    <option value="fan">fan</option>
-                    <option value="ac">ac</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
                 </select>
                 <button onClick={handleSearch}>Tìm kiếm</button>
-
-            </div>
-            <div>
-                <label>Start Time: </label>
-                <input
-                    type="datetime-local"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                />
-
-                <label>End Time: </label>
-                <input
-                    type="datetime-local"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                />
-
-                <button onClick={handleFilterByTime}>Lọc</button>
             </div>
 
             <div>
@@ -146,7 +96,7 @@ function Actionhistory() {
                                 <td>{item.id}</td>
                                 <td>{item.device}</td>
                                 <td>{item.action}</td>
-                                <td>{new Date(item.timestamp).toLocaleString()}</td>
+                                <td>{format(new Date(item.timestamp), 'yyyy-MM-dd HH:mm:ss')}</td> {/* Định dạng thời gian */}
                             </tr>
                         ))}
                     </tbody>
@@ -168,6 +118,21 @@ function Actionhistory() {
                     disabled={currentPage >= totalPages}
                 >
                     Trang sau
+                </button>
+            </div>
+
+            <div className="gotopage">
+                Go to Page: 
+                <input type="text" 
+                placeholder=" nhap page"
+                onChange={(e) => setPages(e.target.value)}
+                
+                />
+
+                <button
+                    onClick={() => setCurrentPage(page)}
+                >
+                    Goto
                 </button>
             </div>
         </div>

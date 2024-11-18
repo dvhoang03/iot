@@ -1,9 +1,8 @@
 const mqtt = require('mqtt');
 
 
-const MQTT_BROKER = 'mqtt://192.168.5.105';  // Replace with your MQTT broker address
+const MQTT_BROKER = 'mqtt://192.168.0.104';  // Replace with your MQTT broker address
 // const MQTT_TOPIC = 'datasensor';  // Replace with your topic if needed
-
 // Connect to the MQTT broker
 const client = mqtt.connect(MQTT_BROKER, {
     clientId: 'nodejs_subscriber',  // You can customize the client ID
